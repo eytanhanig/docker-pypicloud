@@ -23,14 +23,23 @@ storage.calling_format = OrdinaryCallingFormat
 pypi.auth = {{ getv "/pypi/auth" }}
 pypi.default_read = {{ getv "/pypi/default/read" }}
 pypi.cache_update = {{ getv "/pypi/cache/update" }}
+pypi.db = {{ getv "/pypi/db" }}
+pypi.always_show_upstream = {{ getv "/pypi/always/show/upstream" }}
 
+{{ $admins := split (getv "/pypi/admins") "," }}
 auth.admins =
   admin
+  {{ range $admins }}{{ . }}
+  {{ end }}
 
 user.admin = {{ getv "/pypi/admin/password" }}
 
 db.url = {{ getv "/pypi/db/url" }}
 auth.db.url = {{ getv "/pypi/auth/db/url" }}
+
+{{range gets "/pypi/auth/user/*"}} {{ $user := split (.Key) "/" }}
+user.{{ index $user 4 }} = {{ .Value }}
+{{end}}
 
 auth.ldap.url = {{ getv "/pypi/ldap/url" }}
 auth.ldap.service_dn = {{ getv "/pypi/ldap/service/dn" }}

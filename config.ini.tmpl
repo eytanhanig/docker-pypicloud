@@ -7,23 +7,26 @@ pyramid.debug_notfound = false
 pyramid.debug_routematch = false
 pyramid.default_locale_name = en
 
-pypi.fallback = {{ getv "/pypi/fallback" }}
-pypi.fallback_url = {{ getv "/pypi/fallback/url" }}
-
-pypi.storage = {{ getv "/pypi/storage" }}
-
-# File storage configs.
-storage.dir = {{ getv "/pypi/storage/dir" }}
-
-# S3 storage configs.
-# Key and secret pulled from AWS_* variables.
-storage.bucket = {{ getv "/pypi/storage/bucket" }}
-storage.calling_format = OrdinaryCallingFormat
-
-pypi.auth = {{ getv "/pypi/auth" }}
 pypi.default_read = {{ getv "/pypi/default/read" }}
 pypi.cache_update = {{ getv "/pypi/cache/update" }}
+
+# Storage Type
+pypi.storage = {{ getv "/pypi/storage" }}
+
+# Filesystem
+storage.dir = {{ getv "/pypi/storage/dir" }}
+
+# S3 Storage
+storage.bucket = {{ getv "/pypi/storage/bucket" }}
+storage.aws_access_key_id = accesskeyid
+storage.aws_secret_access_key = secretaccesskey
+storage.calling_format = OrdinaryCallingFormat
+
 pypi.db = {{ getv "/pypi/db" }}
+db.url = {{ getv "/pypi/db/url" }}
+
+pypi.fallback = {{ getv "/pypi/fallback" }}
+pypi.fallback_url = {{ getv "/pypi/fallback/url" }}
 pypi.always_show_upstream = {{ getv "/pypi/always/show/upstream" }}
 
 {{ $admins := split (getv "/pypi/admins") "," }}
@@ -34,26 +37,15 @@ auth.admins =
 
 user.admin = {{ getv "/pypi/admin/password" }}
 
-db.url = {{ getv "/pypi/db/url" }}
-auth.db.url = {{ getv "/pypi/auth/db/url" }}
-
-{{range gets "/pypi/auth/user/*"}} {{ $user := split (.Key) "/" }}
+{{range gets "/pypi/auth/user/*"}}{{ $user := split (.Key) "/" }}
 user.{{ index $user 4 }} = {{ .Value }}
 {{end}}
-
-auth.ldap.url = {{ getv "/pypi/ldap/url" }}
-auth.ldap.service_dn = {{ getv "/pypi/ldap/service/dn" }}
-auth.ldap.service_password = {{ getv "/pypi/ldap/service/password" }}
-auth.ldap.base_dn = {{ getv "/pypi/ldap/basedn" }}
-auth.ldap.all_user_search = {{ getv "/pypi/ldap/usersearch" }}
-auth.ldap.id_field = {{ getv "/pypi/ldap/idfield" }}
-auth.ldap.admin_field = {{ getv "/pypi/ldap/admin/field" }}
-auth.ldap.admin_dns = {{ getv "/pypi/ldap/admin/dns" }}
 
 # For beaker
 session.encrypt_key = {{ getv "/pypi/session/encrypt/key" }}
 session.validate_key = {{ getv "/pypi/session/validate/key" }}
 session.secure = {{ getv "/pypi/session/secure" }}
+session.invalidate_corrupt = true
 
 ###
 # wsgi server configuration
@@ -67,11 +59,13 @@ processes = {{ getv "/pypi/processes" }}
 reload-mercy = 15
 worker-reload-mercy = 15
 max-requests = 1000
+enable-threads = true
 {{if getv "/pypi/ssl/key"}}
 https = {{ getv "/pypi/http" }},{{ getv "/pypi/ssl/crt" }},{{ getv "/pypi/ssl/key" }}
 {{else}}
 http = {{ getv "/pypi/http" }}
 {{end}}
+virtualenv = /env
 
 ###
 # logging configuration
@@ -79,7 +73,7 @@ http = {{ getv "/pypi/http" }}
 ###
 
 [loggers]
-keys = root, boto
+keys = root, botocore, pypicloud
 
 [handlers]
 keys = console
@@ -91,9 +85,14 @@ keys = generic
 level = INFO
 handlers = console
 
-[logger_boto]
+[logger_pypicloud]
+level = DEBUG
+qualname = pypicloud
+handlers =
+
+[logger_botocore]
 level = WARN
-qualname = boto
+qualname = botocore
 handlers =
 
 [handler_console]

@@ -1,6 +1,6 @@
 [template]
 src = "config.ini.tmpl"
-dest = "/config.ini"
+dest = "/etc/pypicloud/config.ini"
 keys = [
     "/pypi/fallback",
     "/pypi/fallback/url",

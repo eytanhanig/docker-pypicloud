@@ -1,0 +1,19 @@
+version: "3"
+
+networks:
+  front-tier:
+
+services:
+
+  pdev:
+    container_name: pypi
+    image: pypi-confd:local
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    env_file:
+      - ./vars/sample.env
+    networks:
+      - front-tier

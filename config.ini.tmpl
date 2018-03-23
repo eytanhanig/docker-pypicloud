@@ -9,9 +9,7 @@ pyramid.default_locale_name = en
 
 pypi.default_read = {{ getv "/pypi/default/read" }}
 pypi.default_write = authenticated
-{{if exists "/pypi/cache/update"}}
-pypi.cache_update = {{ getv "/pypi/cache/update" }}
-{{end}}
+pypi.cache_update = {{ getv "/pypi/cache/update" "authenticated" }}
 
 
 # Storage Type
@@ -30,9 +28,7 @@ pypi.db = {{ getv "/pypi/db" "sql" }}
 db.url = {{ getv "/pypi/db/url" "sqlite:///etc/pypicloud/db.sqlite" }}
 
 pypi.fallback = {{ getv "/pypi/fallback" }}
-{{if exists "/pypi/fallback/url"}}
-pypi.fallback_url = {{ getv "/pypi/fallback/url" }}
-{{end}}
+pypi.fallback_url = {{ getv "/pypi/fallback/url" "https://pypi.python.org/simple" }}
 
 pypi.always_show_upstream = {{ getv "/pypi/always/show/upstream" }}
 
@@ -51,9 +47,7 @@ user.{{ index $user 4 }} = {{ .Value }}
 # For beaker
 session.encrypt_key = {{ getv "/pypi/session/encrypt/key" }}
 session.validate_key = {{ getv "/pypi/session/validate/key" }}
-{{if getv "/pypi/session/secure"}}
 session.secure = {{ getv "/pypi/session/secure" "false" }}
-{{end}}
 
 session.invalidate_corrupt = true
 
@@ -65,16 +59,14 @@ session.invalidate_corrupt = true
 paste = config:%p
 paste-logger = %p
 master = true
-{{if exists "/pypi/processes"}}
-processes = {{ getv "/pypi/processes" }}
-{{end}}
+processes = {{ getv "/pypi/processes" "20" }}
 
 reload-mercy = 15
 worker-reload-mercy = 15
 max-requests = 1000
 enable-threads = true
 {{if exists "/pypi/ssl/key"}}
-https = {{ getv "/pypi/http" }},{{ getv "/pypi/ssl/crt" }},{{ getv "/pypi/ssl/key" }}
+https = {{ getv "/pypi/http" "0.0.0.0:8080" }},{{ getv "/pypi/ssl/crt" }},{{ getv "/pypi/ssl/key" }}
 {{else}}
 http = {{ getv "/pypi/http" "0.0.0.0:8080" }}
 {{end}}

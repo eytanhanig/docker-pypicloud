@@ -2,6 +2,8 @@
 src = "config.ini.tmpl"
 dest = "/etc/pypicloud/config.ini"
 keys = [
+    "/aws/access/key/id",
+    "/aws/secret/access/key",
     "/pypi/fallback",
     "/pypi/fallback/url",
     "/pypi/always/show/upstream",

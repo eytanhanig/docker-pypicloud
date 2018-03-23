@@ -1,6 +1,6 @@
 FROM stevearc/pypicloud:1.0.2
 
-MAINTAINER Eytan Hanig
+MAINTAINER docker@eytanhanig.com
 
 ### Install confd
 ENV CONFD_VERSION=0.15.0

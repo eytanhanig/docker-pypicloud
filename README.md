@@ -2,7 +2,6 @@
 
 This adds confd & templating support to the docker image [stevearc/pypicloud:1.0.2](https://hub.docker.com/r/stevearc/pypicloud/).
 
-
 # Instructions
 
 ## Building

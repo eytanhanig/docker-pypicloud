@@ -8,25 +8,32 @@ pyramid.debug_routematch = false
 pyramid.default_locale_name = en
 
 pypi.default_read = {{ getv "/pypi/default/read" }}
+pypi.default_write = authenticated
+{{if exists "/pypi/cache/update"}}
 pypi.cache_update = {{ getv "/pypi/cache/update" }}
+{{end}}
+
 
 # Storage Type
-pypi.storage = {{ getv "/pypi/storage" }}
-
-# Filesystem
-storage.dir = {{ getv "/pypi/storage/dir" }}
-
-# S3 Storage
+{{if eq (getv "/pypi/storage" "file") "s3" }}
+pypi.storage = s3
 storage.bucket = {{ getv "/pypi/storage/bucket" }}
-storage.aws_access_key_id = accesskeyid
-storage.aws_secret_access_key = secretaccesskey
+storage.aws_access_key_id = {{ getv "/aws/access/key/id" }}
+storage.aws_secret_access_key = {{ getv "/aws/secret/access/key" }}
 storage.calling_format = OrdinaryCallingFormat
+{{else}}
+pypi.storage = {{ getv "/pypi/storage/" "file" }}
+storage.dir = {{ getv "/pypi/storage/dir" "/etc/pypicloud/packages" }}
+{{end}}
 
-pypi.db = {{ getv "/pypi/db" }}
-db.url = {{ getv "/pypi/db/url" }}
+pypi.db = {{ getv "/pypi/db" "sql" }}
+db.url = {{ getv "/pypi/db/url" "sqlite:///etc/pypicloud/db.sqlite" }}
 
 pypi.fallback = {{ getv "/pypi/fallback" }}
+{{if exists "/pypi/fallback/url"}}
 pypi.fallback_url = {{ getv "/pypi/fallback/url" }}
+{{end}}
+
 pypi.always_show_upstream = {{ getv "/pypi/always/show/upstream" }}
 
 {{ $admins := split (getv "/pypi/admins") "," }}
@@ -44,7 +51,10 @@ user.{{ index $user 4 }} = {{ .Value }}
 # For beaker
 session.encrypt_key = {{ getv "/pypi/session/encrypt/key" }}
 session.validate_key = {{ getv "/pypi/session/validate/key" }}
-session.secure = {{ getv "/pypi/session/secure" }}
+{{if getv "/pypi/session/secure"}}
+session.secure = {{ getv "/pypi/session/secure" "false" }}
+{{end}}
+
 session.invalidate_corrupt = true
 
 ###
@@ -55,15 +65,18 @@ session.invalidate_corrupt = true
 paste = config:%p
 paste-logger = %p
 master = true
+{{if exists "/pypi/processes"}}
 processes = {{ getv "/pypi/processes" }}
+{{end}}
+
 reload-mercy = 15
 worker-reload-mercy = 15
 max-requests = 1000
 enable-threads = true
-{{if getv "/pypi/ssl/key"}}
+{{if exists "/pypi/ssl/key"}}
 https = {{ getv "/pypi/http" }},{{ getv "/pypi/ssl/crt" }},{{ getv "/pypi/ssl/key" }}
 {{else}}
-http = {{ getv "/pypi/http" }}
+http = {{ getv "/pypi/http" "0.0.0.0:8080" }}
 {{end}}
 virtualenv = /env
 

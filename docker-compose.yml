@@ -14,6 +14,6 @@ services:
     ports:
       - "8080:8080"
     env_file:
-      - ./vars/sample.env
+      - ./sample.env
     networks:
       - front-tier

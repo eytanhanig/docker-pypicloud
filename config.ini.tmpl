@@ -7,7 +7,7 @@ pyramid.debug_notfound = false
 pyramid.debug_routematch = false
 pyramid.default_locale_name = en
 
-pypi.default_read = {{ getv "/pypi/default/read" }}
+pypi.default_read = {{ getv "/pypi/default/read" "authenticated" }}
 pypi.default_write = authenticated
 pypi.cache_update = {{ getv "/pypi/cache/update" "authenticated" }}
 
@@ -27,26 +27,28 @@ storage.dir = {{ getv "/pypi/storage/dir" "/etc/pypicloud/packages" }}
 pypi.db = {{ getv "/pypi/db" "sql" }}
 db.url = {{ getv "/pypi/db/url" "sqlite:///etc/pypicloud/db.sqlite" }}
 
-pypi.fallback = {{ getv "/pypi/fallback" }}
+pypi.fallback = {{ getv "/pypi/fallback" "redirect" }}
 pypi.fallback_url = {{ getv "/pypi/fallback/url" "https://pypi.python.org/simple" }}
 
-pypi.always_show_upstream = {{ getv "/pypi/always/show/upstream" }}
+pypi.always_show_upstream = {{ getv "/pypi/always/show/upstream" "False" }}
 
+{{if exists "/pypi/admins"}}
 {{ $admins := split (getv "/pypi/admins") "," }}
 auth.admins =
   admin
   {{ range $admins }}{{ . }}
   {{ end }}
+{{end}}
 
-user.admin = {{ getv "/pypi/admin/password" }}
+user.admin = {{ getv "/pypi/admin/password" "" }}
 
 {{range gets "/pypi/auth/user/*"}}{{ $user := split (.Key) "/" }}
 user.{{ index $user 4 }} = {{ .Value }}
 {{end}}
 
 # For beaker
-session.encrypt_key = {{ getv "/pypi/session/encrypt/key" }}
-session.validate_key = {{ getv "/pypi/session/validate/key" }}
+session.encrypt_key = {{ getv "/pypi/session/encrypt/key" "39jH7SSo4ZqxZyBQj+iKNxa1RJEyTg5PePUpUhlW6pU=" }}
+session.validate_key = {{ getv "/pypi/session/validate/key" "j728l5M5LmkyAB+f1Tp77rEoisDHUWJS9pJUVDh0S5U=" }}
 session.secure = {{ getv "/pypi/session/secure" "false" }}
 
 session.invalidate_corrupt = true

@@ -3,11 +3,12 @@ version: "3"
 networks:
   front-tier:
 
+
 services:
 
   pdev:
     container_name: pypi
-    image: pypi-confd:local
+    image: pypi:local
     build:
       context: ./
       dockerfile: Dockerfile

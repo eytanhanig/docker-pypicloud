@@ -1,0 +1,19 @@
+version: "3"
+
+services:
+
+  pypicloud:
+    image: eytan/pypicloud:latest
+    ports:
+      - "8080:8080"
+    env_file:
+      - ./example.env
+    environment:
+      - PYPI_DB=redis
+      - PYPI_DB_URL=redis://redis:6379/0
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports: 
+      - "6379:6379"

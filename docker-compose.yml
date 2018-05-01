@@ -1,20 +1,10 @@
 version: "3"
 
-networks:
-  front-tier:
-
-
 services:
 
-  pdev:
-    container_name: pypi
-    image: pypi:local
-    build:
-      context: ./
-      dockerfile: Dockerfile
+  pypicloud:
+    image: eytan/pypicloud:latest
     ports:
       - "8080:8080"
     env_file:
-      - ./sample.env
-    networks:
-      - front-tier
+      - ./example.env

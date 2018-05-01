@@ -4,17 +4,10 @@ This adds confd & templating support to the docker image [stevearc/pypicloud:1.0
 
 # Instructions
 
-## Building
-To build the image use the following bash command:
-```
-docker-compose build
-```
-
 ## Sample Environment
 
-To run locally with sample environmental variables use the following bash commands:
+To run locally with example environmental variables use the following bash commands:
 ```
-docker-compose down
 docker-compose up
 ```
 
